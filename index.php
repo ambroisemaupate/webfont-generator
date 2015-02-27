@@ -134,11 +134,15 @@ class FontConverterGUI
             $request->files->has('file')) {
             $this->file = $request->files->get('file');
 
-            if ($this->file->getClientOriginalExtension() == "ttf") {
-                $font = new Font($this->file, $fs);
-                return $font->handleConvert($this->getConfig()['converterPath']);
+            if (null !== $this->file) {
+                if ($this->file->getMimeType() == 'application/x-font-ttf') {
+                    $font = new Font($this->file, $fs);
+                    return $font->handleConvert($this->getConfig()['converterPath']);
+                } else {
+                    throw new \Exception("You must only upload true-type (.ttf) font files (your file is ".$this->file->getMimeType().").", 1);
+                }
             } else {
-                throw new \Exception("You must only upload TTF font files (your file is ".$this->file->getClientOriginalExtension().").", 1);
+                throw new \Exception("You must choose a TTF font file.", 1);
             }
         }
 

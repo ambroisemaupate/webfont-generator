@@ -1,0 +1,49 @@
+/*
+ *
+ * FontConverter GUI
+ * Ambroise Maupate
+ */
+
+html {
+    background-color: #EFEFEF;
+}
+.uk-container-center {
+    max-width: 400px;
+    margin: 50px auto;
+    text-align: center;
+    border: 1px solid   #00a8e6;
+    background-color: white;
+}
+.inner-form {
+    padding: 20px;
+}
+.inner-form h1 {
+    font-family: 'Lobster', cursive;
+    color: #00a8e6;
+    font-size: 60px;
+    line-height: 53px;
+    padding: 20px 0px;
+}
+
+.uk-button {
+    font-size: 16px;
+}
+
+.uk-button-primary {
+    display: block;
+    width: 100%;
+    line-height: 45px;
+    border:none;
+}
+.uk-button-primary:hover {
+    border:none;
+}
+
+.uk-button,
+.uk-alert {
+    -moz-border-radius: 0px;
+    -o-border-radius: 0px;
+    -ms-border-radius: 0px;
+    -webkit-border-radius: 0px;
+    border-radius: 0px;
+}
