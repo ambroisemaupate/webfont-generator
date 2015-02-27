@@ -1,0 +1,9 @@
+{
+    "require": {
+        "twig/twig": "@stable",
+        "symfony/yaml": "@stable",
+        "symfony/http-foundation": "@stable",
+        "symfony/finder": "@stable",
+        "symfony/filesystem": "@stable"
+    }
+}
