@@ -24,16 +24,9 @@
  * @author Ambroise Maupate
  */
 define('ROOT', dirname(__FILE__));
-require("vendor/autoload.php");
+require "vendor/autoload.php";
 
-use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Yaml\Exception\ParseException;
-use Symfony\Component\Yaml\Parser;
-use Symfony\Component\HttpFoundation\File\UploadedFile;
-use Symfony\Component\HttpFoundation\File\File;
-use Symfony\Component\Filesystem\Filesystem;
-use Symfony\Component\Finder\Finder;
+use \WebfontGenerator\App;
 
-$generator = new \WebfontGenerator\App();
+$generator = new App();
 $generator->boot();
