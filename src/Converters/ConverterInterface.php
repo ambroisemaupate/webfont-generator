@@ -20,20 +20,19 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
  * IN THE SOFTWARE.
  *
- * @file index.php
+ * @file ConverterInterface.php
  * @author Ambroise Maupate
  */
-define('ROOT', dirname(__FILE__));
-require("vendor/autoload.php");
+namespace WebfontGenerator\Converters;
 
-use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Yaml\Exception\ParseException;
-use Symfony\Component\Yaml\Parser;
-use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\File\File;
-use Symfony\Component\Filesystem\Filesystem;
-use Symfony\Component\Finder\Finder;
 
-$generator = new \WebfontGenerator\App();
-$generator->boot();
+interface ConverterInterface
+{
+    /**
+     * @param  Symfony\Component\HttpFoundation\File\File $input
+     *
+     * @return Symfony\Component\HttpFoundation\File\File
+     */
+    public function convert(File $input);
+}

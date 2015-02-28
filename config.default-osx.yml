@@ -1,11 +1,12 @@
 ---
 converters:
+    # Needed to convert to TTF and SVG
+    # http://fontforge.github.io/
     ttf:
-        # http://fontforge.github.io/
-        path: /usr/bin/fontforge
+        path: /Applications/FontForge.app/Contents/Resources/opt/local/bin/fontforge
         class: WebfontGenerator\Converters\TrueTypeConverter
     svg:
-        path: /usr/bin/fontforge
+        path: /Applications/FontForge.app/Contents/Resources/opt/local/bin/fontforge
         class: WebfontGenerator\Converters\ScalableVectorGraphicsConverter
     woff:
         # http://people.mozilla.com/~jkew/woff/

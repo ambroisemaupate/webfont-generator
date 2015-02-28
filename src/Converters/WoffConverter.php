@@ -20,20 +20,40 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
  * IN THE SOFTWARE.
  *
- * @file index.php
+ * @file WoffConverter.php
  * @author Ambroise Maupate
  */
-define('ROOT', dirname(__FILE__));
-require("vendor/autoload.php");
+namespace WebfontGenerator\Converters;
 
-use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Yaml\Exception\ParseException;
-use Symfony\Component\Yaml\Parser;
-use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\File\File;
-use Symfony\Component\Filesystem\Filesystem;
-use Symfony\Component\Finder\Finder;
 
-$generator = new \WebfontGenerator\App();
-$generator->boot();
+/**
+ * Description.
+ */
+class WoffConverter implements ConverterInterface
+{
+    protected $woffCompress = null;
+
+    public function __construct($binPath)
+    {
+        $this->woffCompress = $binPath;
+    }
+
+    public function convert(File $input)
+    {
+        $output = [];
+        exec(
+            $this->woffCompress.' '.$input->getRealPath(),
+            $output,
+            $return
+        );
+
+        if (0 !== $return) {
+            throw new \RuntimeException('sfnt2woff could not convert '.$input->getBasename().' to Woff format.');
+        } else {
+            $basename = $input->getBasename('.'.$input->getExtension());
+
+            return new File($input->getPath().'/'.$basename.'.woff');
+        }
+    }
+}

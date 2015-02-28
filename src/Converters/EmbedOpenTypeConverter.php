@@ -20,20 +20,46 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
  * IN THE SOFTWARE.
  *
- * @file index.php
+ * @file EmbedOpenTypeConverter.php
  * @author Ambroise Maupate
  */
-define('ROOT', dirname(__FILE__));
-require("vendor/autoload.php");
+namespace WebfontGenerator\Converters;
 
-use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Yaml\Exception\ParseException;
-use Symfony\Component\Yaml\Parser;
-use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\File\File;
-use Symfony\Component\Filesystem\Filesystem;
-use Symfony\Component\Finder\Finder;
 
-$generator = new \WebfontGenerator\App();
-$generator->boot();
+/**
+ * Description.
+ */
+class EmbedOpenTypeConverter implements ConverterInterface
+{
+    protected $ttf2eot = null;
+
+    public function __construct($binPath)
+    {
+        $this->ttf2eot = $binPath;
+    }
+
+    public function convert(File $input)
+    {
+        $eotPath = $this->getEOTPath($input);
+        $output = [];
+        exec(
+            $this->ttf2eot.' '.$input->getRealPath(). ' > ' . $eotPath,
+            $output,
+            $return
+        );
+
+        if (0 !== $return) {
+            throw new \RuntimeException('ttf2eot could not convert '.$input->getBasename().' to EOT format.');
+        } else {
+            return new File($eotPath);
+        }
+    }
+
+    public function getEOTPath(File $input)
+    {
+        $basename = $input->getBasename('.'.$input->getExtension());
+
+        return $input->getPath().'/'.$basename.'.eot';
+    }
+}

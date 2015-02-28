@@ -5,5 +5,8 @@
         "symfony/http-foundation": "@stable",
         "symfony/finder": "@stable",
         "symfony/filesystem": "@stable"
+    },
+    "autoload": {
+        "psr-4": {"WebfontGenerator\\": "src/"}
     }
 }
