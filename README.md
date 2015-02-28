@@ -10,7 +10,7 @@ Install them before using webfont-generator.
 
 ![Screenshot](/screenshot.png)
 
-```
+```bash
 # Clone current project to your webserver root
 git clone https://github.com/ambroisemaupate/webfont-generator.git
 # Create your own config file
