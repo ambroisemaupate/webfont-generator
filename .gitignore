@@ -58,15 +58,6 @@ Temporary Items
 /composer.phar
 
 ### Font converter
-*.ttf
-*.otf
-*.svg
-*.eot
-*.woff
-*.woff2
-*.zip
-/*.css
-
 config.yml
 
 .nfs.*
