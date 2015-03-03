@@ -25,6 +25,7 @@
  */
 namespace WebfontGenerator\Converters;
 
+use WebfontGenerator\Util\StringHandler;
 use Symfony\Component\HttpFoundation\File\File;
 
 class TrueTypeConverter implements ConverterInterface
@@ -39,8 +40,9 @@ class TrueTypeConverter implements ConverterInterface
     public function convert(File $input)
     {
         $output = [];
+        $outFile = $this->getTTFPath($input);
         exec(
-            $this->fontforge.' -script '.ROOT.'/assets/scripts/tottf.pe '.$input->getRealPath(),
+            $this->fontforge.' -script '.ROOT.'/assets/scripts/tottf.pe "'.$input->getRealPath().'"',
             $output,
             $return
         );
@@ -48,9 +50,14 @@ class TrueTypeConverter implements ConverterInterface
         if (0 !== $return) {
             throw new \RuntimeException('Fontforge could not convert '.$input->getBasename().' to TrueType format.');
         } else {
-            $basename = $input->getBasename('.'.$input->getExtension());
-
-            return new File($input->getPath().'/'.$basename.'.ttf');
+            return new File($outFile);
         }
+    }
+
+    public function getTTFPath(File $input)
+    {
+        $basename = StringHandler::slugify($input->getBasename('.'.$input->getExtension()));
+
+        return $input->getPath().'/'.$basename.'.ttf';
     }
 }

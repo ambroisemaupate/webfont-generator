@@ -25,6 +25,7 @@
  */
 namespace WebfontGenerator\Converters;
 
+use WebfontGenerator\Util\StringHandler;
 use Symfony\Component\HttpFoundation\File\File;
 
 /**
@@ -42,8 +43,9 @@ class ScalableVectorGraphicsConverter implements ConverterInterface
     public function convert(File $input)
     {
         $output = [];
+        $outFile = $this->getSVGPath($input);
         exec(
-            $this->fontforge.' -script '.ROOT.'/assets/scripts/tosvg.pe '.$input->getRealPath(),
+            $this->fontforge.' -script '.ROOT.'/assets/scripts/tosvg.pe "'.$input->getRealPath().'"',
             $output,
             $return
         );
@@ -51,9 +53,14 @@ class ScalableVectorGraphicsConverter implements ConverterInterface
         if (0 !== $return) {
             throw new \RuntimeException('Fontforge could not convert '.$input->getBasename().' to SVG format.');
         } else {
-            $basename = $input->getBasename('.'.$input->getExtension());
-
-            return new File($input->getPath().'/'.$basename.'.svg');
+            return new File($outFile);
         }
+    }
+
+    public function getSVGPath(File $input)
+    {
+        $basename = StringHandler::slugify($input->getBasename('.'.$input->getExtension()));
+
+        return $input->getPath().'/'.$basename.'.svg';
     }
 }

@@ -25,6 +25,7 @@
  */
 namespace WebfontGenerator;
 
+use WebfontGenerator\Util\StringHandler;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\HttpFoundation\File\File;
@@ -56,7 +57,10 @@ class WebFont
             $this->fs->mkdir($this->distDir);
         }
 
-        $this->originalFile = $tmpFile->move($this->buildDir, $tmpFile->getClientOriginalName());
+        $original = pathinfo($tmpFile->getClientOriginalName());
+        $basename = StringHandler::slugify(basename($tmpFile->getClientOriginalName(), $original['extension']));
+
+        $this->originalFile = $tmpFile->move($this->buildDir, $basename . '.' . $original['extension']);
     }
 
     public function getOriginal()

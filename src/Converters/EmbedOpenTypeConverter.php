@@ -25,6 +25,7 @@
  */
 namespace WebfontGenerator\Converters;
 
+use WebfontGenerator\Util\StringHandler;
 use Symfony\Component\HttpFoundation\File\File;
 
 /**
@@ -44,13 +45,15 @@ class EmbedOpenTypeConverter implements ConverterInterface
         $eotPath = $this->getEOTPath($input);
         $output = [];
         exec(
-            $this->ttf2eot.' '.$input->getRealPath(). ' > ' . $eotPath,
+            $this->ttf2eot.' "'.$input->getRealPath(). '" > ' . $eotPath.'',
             $output,
             $return
         );
 
+        $outputHuman = implode('<br/>', $output);
+
         if (0 !== $return) {
-            throw new \RuntimeException('ttf2eot could not convert '.$input->getBasename().' to EOT format.');
+            throw new \RuntimeException('ttf2eot could not convert '.$input->getBasename().' to EOT format.' . $outputHuman);
         } else {
             return new File($eotPath);
         }
@@ -58,7 +61,7 @@ class EmbedOpenTypeConverter implements ConverterInterface
 
     public function getEOTPath(File $input)
     {
-        $basename = $input->getBasename('.'.$input->getExtension());
+        $basename = StringHandler::slugify($input->getBasename('.'.$input->getExtension()));
 
         return $input->getPath().'/'.$basename.'.eot';
     }

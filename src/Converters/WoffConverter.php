@@ -25,6 +25,7 @@
  */
 namespace WebfontGenerator\Converters;
 
+use WebfontGenerator\Util\StringHandler;
 use Symfony\Component\HttpFoundation\File\File;
 
 /**
@@ -42,8 +43,10 @@ class WoffConverter implements ConverterInterface
     public function convert(File $input)
     {
         $output = [];
+        $outFile = $this->getWOFFPath($input);
+
         exec(
-            $this->woffCompress.' '.$input->getRealPath(),
+            $this->woffCompress.' "'.$input->getRealPath().'"',
             $output,
             $return
         );
@@ -51,9 +54,14 @@ class WoffConverter implements ConverterInterface
         if (0 !== $return) {
             throw new \RuntimeException('sfnt2woff could not convert '.$input->getBasename().' to Woff format.');
         } else {
-            $basename = $input->getBasename('.'.$input->getExtension());
-
-            return new File($input->getPath().'/'.$basename.'.woff');
+            return new File($outFile);
         }
+    }
+
+    public function getWOFFPath(File $input)
+    {
+        $basename = StringHandler::slugify($input->getBasename('.'.$input->getExtension()));
+
+        return $input->getPath().'/'.$basename.'.woff';
     }
 }
