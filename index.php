@@ -26,7 +26,9 @@
 define('ROOT', dirname(__FILE__));
 require "vendor/autoload.php";
 
+use Symfony\Component\HttpFoundation\Request;
 use \WebfontGenerator\App;
 
+$request = Request::createFromGlobals();
 $generator = new App();
-$generator->boot();
+$generator->handle($request)->send();

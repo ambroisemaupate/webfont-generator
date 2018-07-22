@@ -61,6 +61,6 @@ class ScalableVectorGraphicsConverter implements ConverterInterface
     {
         $basename = StringHandler::slugify($input->getBasename('.'.$input->getExtension()));
 
-        return $input->getPath().'/'.$basename.'.svg';
+        return $input->getPath().DIRECTORY_SEPARATOR.$basename.'.svg';
     }
 }

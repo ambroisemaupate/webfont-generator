@@ -25,30 +25,42 @@
  */
 namespace WebfontGenerator;
 
+use WebfontGenerator\Converters\ConverterInterface;
 use WebfontGenerator\Util\StringHandler;
 use Symfony\Component\Filesystem\Filesystem;
-use Symfony\Component\Finder\Finder;
 use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 class WebFont
 {
     protected $output = [];
-    protected $originalFile = null;
+    protected $originalFiles = [];
     protected $zipFile = null;
     protected $buildDir = null;
     protected $distDir = null;
     protected $fs = null;
     protected $id = null;
     protected $outputFiles = null;
+    /**
+     * @var ConverterInterface[]
+     */
+    protected $converters;
 
-    public function __construct(UploadedFile $tmpFile, Filesystem $fs)
+    /**
+     * WebFont constructor.
+     *
+     * @param Filesystem $fs
+     * @param array $converters
+     */
+    public function __construct(Filesystem $fs, array $converters)
     {
         $this->id = uniqid();
+        $this->originalFiles = [];
         $this->fs = $fs;
         $this->buildDir = ROOT . "/build/".$this->id;
         $this->distDir = ROOT . "/dist";
         $this->outputFiles = [];
+        $this->converters = $converters;
 
         if (!$this->fs->exists($this->buildDir)) {
             $this->fs->mkdir($this->buildDir);
@@ -56,30 +68,47 @@ class WebFont
         if (!$this->fs->exists($this->distDir)) {
             $this->fs->mkdir($this->distDir);
         }
-
-        $original = pathinfo($tmpFile->getClientOriginalName());
-        $basename = StringHandler::slugify(basename($tmpFile->getClientOriginalName(), $original['extension']));
-
-        $this->originalFile = $tmpFile->move($this->buildDir, $basename . '.' . $original['extension']);
-    }
-
-    public function getOriginal()
-    {
-        return $this->originalFile;
     }
 
     /**
-     * @param Symfony\Component\HttpFoundation\File\File $file
+     * @param UploadedFile $tmpFile
      */
-    public function addFile(File $file)
+    public function addFontFile(UploadedFile $tmpFile)
+    {
+        $original = pathinfo($tmpFile->getClientOriginalName());
+        $basename = StringHandler::slugify(basename($tmpFile->getClientOriginalName(), $original['extension']));
+        $this->originalFiles[] = $tmpFile->move($this->buildDir, $basename . '.' . $original['extension']);
+    }
+
+    /**
+     * @return null|File
+     */
+    public function getFirstOriginalFile()
+    {
+        return count($this->originalFiles) > 0 ? $this->originalFiles[0] : null;
+    }
+
+    /**
+     * @return array
+     */
+    public function getOriginalFiles()
+    {
+        return $this->originalFiles;
+    }
+
+    /**
+     * @param File $file
+     * @return WebFont
+     */
+    protected function addOutputFile(File $file)
     {
         $this->outputFiles[] = $file;
-
         return $this;
     }
 
     /**
-     * @return Symfony\Component\HttpFoundation\File\File
+     * @return File
+     * @throws \Exception
      */
     public function getZipFile()
     {
@@ -87,7 +116,9 @@ class WebFont
         $zip = new \ZipArchive();
         $zip->open($zipPath, \ZipArchive::CREATE);
 
-        $zip->addFile($this->originalFile->getRealpath(), 'original-'.$this->originalFile->getBasename());
+        foreach ($this->getOriginalFiles() as $originalFile) {
+            $zip->addFile($originalFile->getRealpath(), 'original-'.$originalFile->getBasename());
+        }
 
         foreach ($this->outputFiles as $file) {
             $zip->addFile($file->getRealpath(), $file->getBasename());
@@ -99,17 +130,34 @@ class WebFont
 
         $this->zipFile = new File($zipPath);
         $this->fs->remove($this->buildDir);
-
         return $this->zipFile;
     }
 
+    /**
+     * @return string
+     */
     public function getZipPath()
     {
+        if (null === $this->getFirstOriginalFile()) {
+            throw new \RuntimeException('No font file have been added yet.');
+        }
         return $this->distDir .
-               "/" .
-               strtolower(str_replace(".", "-", $this->originalFile->getBasename())) .
+               DIRECTORY_SEPARATOR .
+               strtolower(str_replace(".", "-", $this->getFirstOriginalFile()->getBasename())) .
                "-" .
                $this->id .
                ".zip";
+    }
+
+    /**
+     *
+     */
+    public function convert()
+    {
+        foreach ($this->getOriginalFiles() as $originalFile) {
+            foreach ($this->converters as $converter) {
+                $this->addOutputFile($converter->convert($originalFile));
+            }
+        }
     }
 }

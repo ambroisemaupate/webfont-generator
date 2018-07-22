@@ -10,22 +10,28 @@
         <link rel="stylesheet" href="/assets/css/styles.css" />
     </head>
     <body>
+        <h1 class="main-title">Webfont generator</h1>
         <div class="uk-width-medium-1-2 uk-article uk-container-center">
-            <form class="uk-form uk-form-stacked" action="#" method="post" id="ttf-form" enctype="multipart/form-data">
+            {% form_theme form 'forms.html.twig' %}
+            {{ form_start(form, {
+                attr: {
+                    class: "uk-form uk-form-stacked",
+                    id: "ttf-form"
+                }
+            }) }}
                 <div class="inner-form">
-                    <h1 class="uk-article-title">Webfont generator</h1>
-                    {% if error %}
-                    <p class="uk-alert uk-alert-danger">{{ error }}</p>
-                    {% endif %}
                     <div class="uk-margin" uk-margin>
+                        <p class="uk-text-meta">Upload one or many ttf/otf font files.</p>
+                        {{ form_errors(form) }}
                         <div uk-form-custom="target: true">
-                            <input type="file" name="file">
-                            <input class="uk-input uk-form-width-medium" type="text" placeholder="Select an OTF/TTF file" disabled>
+                            {{ form_widget(form.files) }}
+                            <input class="uk-input uk-form-width-medium" type="text" placeholder="Select OTF/TTF files" disabled>
                         </div>
                         <button class="uk-button uk-button-primary"><span uk-icon="cog"></span> Convert</button>
                     </div>
+                    {{ form_rest(form) }}
                 </div>
-            </form>
+            {{ form_end(form) }}
         </div>
         <p class="disclaimer">Source available at <a href="https://github.com/ambroisemaupate/webfont-generator">github.com/ambroisemaupate/webfont-generator</a></p>
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>

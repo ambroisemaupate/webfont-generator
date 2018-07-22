@@ -1,10 +1,11 @@
 # webfont-generator
+**Convert one or many OTF/TTF files in EOT, SVG, WOFF and WOFF2.**
 
-Web interface written in PHP to wrap many font converting tools.
+Built thanks to:
 
 * [fontforge](http://fontforge.github.io/), for converting to ttf and svg. You only need to setup command line scripting tool.
-* [ttf2eot](http://code.google.com/p/ttf2eot/)
-* [sfnt2woff](http://people.mozilla.com/~jkew/woff/)
+* [ttf2eot](https://github.com/wget/ttf2eot)
+* [sfnt2woff](https://github.com/kseo/sfnt2woff)
 * [woff2_compress](https://github.com/google/woff2)
 
 ![Webfont generator screenshot](/screenshot.jpg)

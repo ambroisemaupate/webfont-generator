@@ -25,13 +25,29 @@
  */
 namespace WebfontGenerator;
 
+use Symfony\Bridge\Twig\Extension\FormExtension;
+use Symfony\Bridge\Twig\Extension\TranslationExtension;
+use Symfony\Bridge\Twig\Form\TwigRendererEngine;
 use Symfony\Component\Filesystem\Filesystem;
-use Symfony\Component\HttpFoundation\File\File;
+use Symfony\Component\Form\Extension\HttpFoundation\HttpFoundationExtension;
+use Symfony\Component\Form\Extension\Validator\ValidatorExtension;
+use Symfony\Component\Form\FormError;
+use Symfony\Component\Form\FormRenderer;
+use Symfony\Component\Form\Forms;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\ResponseHeaderBag;
+use Symfony\Component\Translation\Loader\XliffFileLoader;
+use Symfony\Component\Translation\Translator;
+use Symfony\Component\Validator\Validation;
 use Symfony\Component\Yaml\Parser;
-
+use Twig\Environment;
+use Twig\Loader\FilesystemLoader;
+use Twig\RuntimeLoader\FactoryRuntimeLoader;
 use WebfontGenerator\Converters\ConverterInterface;
+use WebfontGenerator\Form\FontType;
 
 /**
  *
@@ -41,76 +57,125 @@ class App
     protected $twig = null;
     protected $config = null;
     protected $configPath = "config.yml";
-    protected $request = null;
-    protected $response = null;
     protected $file = null;
     protected $assignation = [];
 
-    public function boot()
+    /**
+     * @return \Symfony\Component\Form\FormFactoryInterface
+     */
+    protected function createFormFactory()
+    {
+        $vendorDirectory = realpath(__DIR__.'/../vendor');
+        $vendorFormDirectory = $vendorDirectory.'/symfony/form';
+        $vendorValidatorDirectory = $vendorDirectory.'/symfony/validator';
+        // creates the Translator
+        $translator = new Translator('en');
+        // somehow load some translations into it
+        $translator->addLoader('xlf', new XliffFileLoader());
+        // adds the TranslationExtension (gives us trans and transChoice filters)
+        $this->getTwig()->addExtension(new TranslationExtension($translator));
+        // creates the validator - details will vary
+        $validator = Validation::createValidator();
+        // there are built-in translations for the core error messages
+        $translator->addResource(
+            'xlf',
+            $vendorFormDirectory.'/Resources/translations/validators.en.xlf',
+            'en',
+            'validators'
+        );
+        $translator->addResource(
+            'xlf',
+            $vendorValidatorDirectory.'/Resources/translations/validators.en.xlf',
+            'en',
+            'validators'
+        );
+
+        return Forms::createFormFactoryBuilder()
+            ->addExtension(new HttpFoundationExtension())
+            ->addExtension(new ValidatorExtension($validator))
+            ->getFormFactory();
+    }
+
+    /**
+     * @param Request $request
+     *
+     * @return Response
+     * @throws \Exception
+     */
+    public function handle(Request $request)
     {
         if (!empty($this->getConfig()['converters'])) {
+            $formFactory = $this->createFormFactory();
+            $form = $formFactory->createNamed('fonts', FontType::class);
+            $form->handleRequest($request);
 
-            $this->request = Request::createFromGlobals();
-
-            try {
+            if ($form->isSubmitted() && $form->isValid()) {
                 $fs = new Filesystem();
-                $zipFile = $this->handle($this->request, $fs);
-                if (null !== $zipFile) {
-                    $response = new Response();
-
-                    // Set headers
-                    $response->headers->set('Cache-Control', 'private');
-                    $response->headers->set('Content-type', $zipFile->getMimeType());
-                    $response->headers->set('Content-Disposition', 'attachment; filename="' . $zipFile->getBasename() . '";');
-
-                    // Send headers before outputting anything
-                    $response->sendHeaders();
-                    $response->setContent(file_get_contents($zipFile->getRealPath()));
-                    $response->send();
-
-                    /*
-                     * Delete zip from server
-                     */
-                    $fs->remove($zipFile->getRealPath());
-
-                    return 0;
+                $font = new WebFont($fs, $this->getFontConverters());
+                /** @var UploadedFile $file */
+                foreach ($form->get('files')->getData() as $file) {
+                    $font->addFontFile($file);
                 }
+                $font->convert();
 
-            } catch (\Exception $e) {
-                $this->assignation['error'] = $e->getMessage();
+                $zipFile = $font->getZipFile();
+                $response = new BinaryFileResponse($zipFile);
+                $response->setContentDisposition(
+                    ResponseHeaderBag::DISPOSITION_ATTACHMENT,
+                    $zipFile->getBasename()
+                );
+                $response->prepare($request);
+                return $response;
             }
 
-            $this->response = new Response();
-            $this->response->setContent($this->getTwig()->render('base.html.twig', $this->assignation));
-            $this->response->setCharset('UTF-8');
-            $this->response->prepare($this->request);
-            $this->response->send();
+            $this->assignation['form'] = $form->createView();
 
-            return 0;
+            $response = new Response($this->getTwig()->render('base.html.twig', $this->assignation));
+            $response->setCharset('UTF-8');
+            $response->prepare($request);
 
+            return $response;
         } else {
             throw new \Exception("You must define converters path in your “config.yml” file.", 1);
         }
     }
 
+    /**
+     * @return null|Environment
+     */
     public function getTwig()
     {
         if (null === $this->twig) {
+            $defaultFormTheme = 'form_div_layout.html.twig';
+            $appVariableReflection = new \ReflectionClass('\Symfony\Bridge\Twig\AppVariable');
+            $vendorTwigBridgeDirectory = dirname($appVariableReflection->getFileName());
 
-            $this->twig = new \Twig_Environment(
-                new \Twig_Loader_Filesystem([
+            $this->twig = new Environment(
+                new FilesystemLoader([
                     ROOT. '/views',
+                    $vendorTwigBridgeDirectory.'/Resources/views/Form',
                 ]),
                 [
-                    'debug' => true,
+                    'debug' => isset($_ENV['DEBUG']) && $_ENV['DEBUG'] == true ? true : false,
                     'cache' => ROOT . "/cache",
                 ]
             );
+
+            $formEngine = new TwigRendererEngine([$defaultFormTheme], $this->twig);
+            $this->twig->addRuntimeLoader(new FactoryRuntimeLoader([
+                FormRenderer::class => function () use ($formEngine) {
+                    return new FormRenderer($formEngine);
+                },
+            ]));
+            $this->twig->addExtension(new FormExtension());
         }
 
         return $this->twig;
     }
 
+    /**
+     * @return mixed|null
+     */
     public function getConfig()
     {
         if (null === $this->config &&
@@ -122,43 +187,35 @@ class App
         return $this->config;
     }
 
-    public function handle(Request $request, Filesystem $fs)
+    /**
+     * @param $class
+     * @param $path
+     *
+     * @return ConverterInterface
+     */
+    protected function getFontConverter($class, $path)
     {
-        if ($request->getMethod() === Request::METHOD_POST &&
-            $request->files->has('file')) {
-            $this->file = $request->files->get('file');
+        $converterClass = $class;
+        $c = new $converterClass($path);
+        if ($c instanceof ConverterInterface) {
+            return $c;
+        } else {
+            throw new \RuntimeException($class . "must implement ConverterInterface.", 1);
+        }
+    }
 
-            if (null !== $this->file) {
-                if ($this->file->getMimeType() == 'application/x-font-ttf' ||
-                    $this->file->getMimeType() == 'application/vnd.ms-opentype') {
-                    $font = new WebFont($this->file, $fs);
-
-                    foreach ($this->config['converters'] as $key => $converter) {
-                        if (!empty($converter['path']) &&
-                            !empty($converter['class'])) {
-                            /*
-                             * Initialize file converter
-                             */
-                            $converterClass = $converter['class'];
-                            $c = new $converterClass($converter['path']);
-
-                            if ($c instanceof ConverterInterface) {
-                                $font->addFile($c->convert($font->getOriginal()));
-                            } else {
-                                throw new \RuntimeException($converter['class'] . "must implement ConverterInterface.", 1);
-                            }
-                        }
-                    }
-
-                    return $font->getZipFile();
-                } else {
-                    throw new \Exception("You must only upload true-type (.ttf) or opentype (.otf) font files (your file is " . $this->file->getMimeType() . ").", 1);
-                }
-            } else {
-                throw new \Exception("You must choose an OTF/TTF font file.", 1);
+    /**
+     * @return ConverterInterface[]
+     */
+    protected function getFontConverters()
+    {
+        $converters = [];
+        foreach ($this->config['converters'] as $converter) {
+            if (!empty($converter['path']) && !empty($converter['class'])) {
+                $converters[] = $this->getFontConverter($converter['class'], $converter['path']);
             }
         }
 
-        return null;
+        return $converters;
     }
 }

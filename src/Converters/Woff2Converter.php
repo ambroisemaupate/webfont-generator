@@ -61,6 +61,6 @@ class Woff2Converter implements ConverterInterface
     {
         $basename = StringHandler::slugify($input->getBasename('.'.$input->getExtension()));
 
-        return $input->getPath().'/'.$basename.'.woff2';
+        return $input->getPath().DIRECTORY_SEPARATOR.$basename.'.woff2';
     }
 }

@@ -58,6 +58,6 @@ class TrueTypeConverter implements ConverterInterface
     {
         $basename = StringHandler::slugify($input->getBasename('.'.$input->getExtension()));
 
-        return $input->getPath().'/'.$basename.'.ttf';
+        return $input->getPath().DIRECTORY_SEPARATOR.$basename.'.ttf';
     }
 }

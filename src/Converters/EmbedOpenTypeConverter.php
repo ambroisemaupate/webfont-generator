@@ -63,6 +63,6 @@ class EmbedOpenTypeConverter implements ConverterInterface
     {
         $basename = StringHandler::slugify($input->getBasename('.'.$input->getExtension()));
 
-        return $input->getPath().'/'.$basename.'.eot';
+        return $input->getPath().DIRECTORY_SEPARATOR.$basename.'.eot';
     }
 }

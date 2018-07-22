@@ -30,9 +30,8 @@ use Symfony\Component\HttpFoundation\File\File;
 interface ConverterInterface
 {
     /**
-     * @param  Symfony\Component\HttpFoundation\File\File $input
-     *
-     * @return Symfony\Component\HttpFoundation\File\File
+     * @param File $input
+     * @return File
      */
     public function convert(File $input);
 }
