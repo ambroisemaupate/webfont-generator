@@ -28,6 +28,11 @@ namespace WebfontGenerator\Converters;
 use WebfontGenerator\Util\StringHandler;
 use Symfony\Component\HttpFoundation\File\File;
 
+/**
+ * Class TrueTypeConverter
+ *
+ * @package WebfontGenerator\Converters
+ */
 class TrueTypeConverter implements ConverterInterface
 {
     protected $fontforge = null;
@@ -39,6 +44,10 @@ class TrueTypeConverter implements ConverterInterface
 
     public function convert(File $input)
     {
+        if (!file_exists($this->fontforge)) {
+            throw new \RuntimeException('Fontforge could not be found.');
+        }
+
         $output = [];
         $outFile = $this->getTTFPath($input);
         exec(

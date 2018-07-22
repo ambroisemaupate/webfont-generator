@@ -50,7 +50,9 @@ use WebfontGenerator\Converters\ConverterInterface;
 use WebfontGenerator\Form\FontType;
 
 /**
+ * Class App
  *
+ * @package WebfontGenerator
  */
 class App
 {
@@ -68,14 +70,13 @@ class App
         $vendorDirectory = realpath(__DIR__.'/../vendor');
         $vendorFormDirectory = $vendorDirectory.'/symfony/form';
         $vendorValidatorDirectory = $vendorDirectory.'/symfony/validator';
-        // creates the Translator
         $translator = new Translator('en');
-        // somehow load some translations into it
         $translator->addLoader('xlf', new XliffFileLoader());
-        // adds the TranslationExtension (gives us trans and transChoice filters)
         $this->getTwig()->addExtension(new TranslationExtension($translator));
-        // creates the validator - details will vary
-        $validator = Validation::createValidator();
+        $validator = Validation::createValidatorBuilder()
+            ->setTranslationDomain(null)
+            ->setTranslator($translator)
+            ->getValidator();
         // there are built-in translations for the core error messages
         $translator->addResource(
             'xlf',
@@ -110,24 +111,27 @@ class App
             $form->handleRequest($request);
 
             if ($form->isSubmitted() && $form->isValid()) {
-                $fs = new Filesystem();
-                $font = new WebFont($fs, $this->getFontConverters());
-                /** @var UploadedFile $file */
-                foreach ($form->get('files')->getData() as $file) {
-                    $font->addFontFile($file);
+                try {
+                    $fs = new Filesystem();
+                    $font = new WebFont($fs, $this->getFontConverters());
+                    /** @var UploadedFile $file */
+                    foreach ($form->get('files')->getData() as $file) {
+                        $font->addFontFile($file);
+                    }
+                    $font->convert();
+
+                    $zipFile = $font->getZipFile();
+                    $response = new BinaryFileResponse($zipFile);
+                    $response->setContentDisposition(
+                        ResponseHeaderBag::DISPOSITION_ATTACHMENT,
+                        $zipFile->getBasename()
+                    );
+                    $response->prepare($request);
+                    return $response;
+                } catch (\RuntimeException $exception) {
+                    $form->addError(new FormError($exception->getMessage()));
                 }
-                $font->convert();
-
-                $zipFile = $font->getZipFile();
-                $response = new BinaryFileResponse($zipFile);
-                $response->setContentDisposition(
-                    ResponseHeaderBag::DISPOSITION_ATTACHMENT,
-                    $zipFile->getBasename()
-                );
-                $response->prepare($request);
-                return $response;
             }
-
             $this->assignation['form'] = $form->createView();
 
             $response = new Response($this->getTwig()->render('base.html.twig', $this->assignation));

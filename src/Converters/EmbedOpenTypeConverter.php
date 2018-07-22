@@ -29,7 +29,9 @@ use WebfontGenerator\Util\StringHandler;
 use Symfony\Component\HttpFoundation\File\File;
 
 /**
- * Description.
+ * Class EmbedOpenTypeConverter
+ *
+ * @package WebfontGenerator\Converters
  */
 class EmbedOpenTypeConverter implements ConverterInterface
 {
@@ -42,6 +44,9 @@ class EmbedOpenTypeConverter implements ConverterInterface
 
     public function convert(File $input)
     {
+        if (!file_exists($this->ttf2eot)) {
+            throw new \RuntimeException('ttf2eot could not be found.');
+        }
         $eotPath = $this->getEOTPath($input);
         $output = [];
         exec(

@@ -27,6 +27,11 @@ namespace WebfontGenerator\Converters;
 
 use Symfony\Component\HttpFoundation\File\File;
 
+/**
+ * Interface ConverterInterface
+ *
+ * @package WebfontGenerator\Converters
+ */
 interface ConverterInterface
 {
     /**

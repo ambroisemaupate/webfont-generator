@@ -30,7 +30,9 @@
 namespace WebfontGenerator\Util;
 
 /**
- * String handling methods.
+ * Class StringHandler
+ *
+ * @package WebfontGenerator\Util
  */
 class StringHandler
 {
@@ -120,7 +122,6 @@ class StringHandler
      * Transform to camelcase.
      *
      * @param string $string
-     *
      * @return string
      */
     public static function camelCase($string)
@@ -134,13 +135,25 @@ class StringHandler
         return $string;
     }
 
-
+    /**
+     * @param $haystack
+     * @param $needle
+     *
+     * @return bool
+     */
     public static function endsWith($haystack, $needle)
     {
         // search forward starting from end minus needle length characters
         return $needle === "" || strpos($haystack, $needle, strlen($haystack) - strlen($needle)) !== false;
     }
 
+    /**
+     * @param $search
+     * @param $replace
+     * @param $subject
+     *
+     * @return mixed
+     */
     public static function replaceLast($search, $replace, $subject)
     {
         $pos = strrpos($subject, $search);

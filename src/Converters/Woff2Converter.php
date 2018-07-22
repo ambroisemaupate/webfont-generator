@@ -29,7 +29,9 @@ use WebfontGenerator\Util\StringHandler;
 use Symfony\Component\HttpFoundation\File\File;
 
 /**
- * Description.
+ * Class Woff2Converter
+ *
+ * @package WebfontGenerator\Converters
  */
 class Woff2Converter implements ConverterInterface
 {
@@ -42,6 +44,9 @@ class Woff2Converter implements ConverterInterface
 
     public function convert(File $input)
     {
+        if (!file_exists($this->woffCompress)) {
+            throw new \RuntimeException('woff2_compress could not be found.');
+        }
         $output = [];
         $outFile = $this->getWOFFPath($input);
         exec(

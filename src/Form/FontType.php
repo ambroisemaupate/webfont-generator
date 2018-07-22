@@ -6,7 +6,13 @@ use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Validator\Constraints\All;
 use Symfony\Component\Validator\Constraints\File;
+use Symfony\Component\Validator\Constraints\NotBlank;
 
+/**
+ * Class FontType
+ *
+ * @package WebfontGenerator\Form
+ */
 class FontType extends AbstractType
 {
     /**
@@ -19,6 +25,7 @@ class FontType extends AbstractType
             ->add('files', FileType::class, [
                 'multiple' => true,
                 'constraints' => [
+                    new NotBlank(),
                     new All([
                         'constraints' => [
                             new File([

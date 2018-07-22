@@ -8,7 +8,9 @@
         "symfony/filesystem": "^4.1",
         "symfony/form": "^4.1",
         "symfony/validator": "^4.1",
-        "symfony/twig-bridge": "^4.1"
+        "symfony/twig-bridge": "^4.1",
+        "symfony/translation": "^4.1",
+        "symfony/config": "^4.1"
     },
     "autoload": {
         "psr-4": {"WebfontGenerator\\": "src/"}

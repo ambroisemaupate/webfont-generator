@@ -29,7 +29,9 @@ use WebfontGenerator\Util\StringHandler;
 use Symfony\Component\HttpFoundation\File\File;
 
 /**
- * Description.
+ * Class ScalableVectorGraphicsConverter
+ *
+ * @package WebfontGenerator\Converters
  */
 class ScalableVectorGraphicsConverter implements ConverterInterface
 {
@@ -42,6 +44,10 @@ class ScalableVectorGraphicsConverter implements ConverterInterface
 
     public function convert(File $input)
     {
+        if (!file_exists($this->fontforge)) {
+            throw new \RuntimeException('Fontforge could not be found.');
+        }
+
         $output = [];
         $outFile = $this->getSVGPath($input);
         exec(

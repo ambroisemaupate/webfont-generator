@@ -23,6 +23,7 @@
                     <div class="uk-margin" uk-margin>
                         <p class="uk-text-meta">Upload one or many ttf/otf font files.</p>
                         {{ form_errors(form) }}
+                        {{ form_errors(form.files) }}
                         <div uk-form-custom="target: true">
                             {{ form_widget(form.files) }}
                             <input class="uk-input uk-form-width-medium" type="text" placeholder="Select OTF/TTF files" disabled>

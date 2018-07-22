@@ -4,7 +4,7 @@
     {%- if errors|length > 0 -%}
         <div>
             {%- for error in errors -%}
-                <p class="uk-alert uk-alert-danger">{{ error.message }}</p>
+                <p class="uk-alert uk-alert-danger uk-text-small">{{ error.message }}</p>
             {%- endfor -%}
         </div>
     {%- endif -%}

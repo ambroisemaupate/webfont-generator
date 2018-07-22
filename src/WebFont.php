@@ -31,6 +31,11 @@ use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 
+/**
+ * Class WebFont
+ *
+ * @package WebfontGenerator
+ */
 class WebFont
 {
     protected $output = [];
