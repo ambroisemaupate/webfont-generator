@@ -1,18 +1,13 @@
 <!DOCTYPE html>
-<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
-<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
-<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
-<!--[if gt IE 8]><!--> <html class="no-js"> <!--<![endif]-->
+<html class="no-js">
     <head>
         <meta charset="utf-8" />
         <meta http-equiv="X-UA-Compatible" content="IE=edge" />
         <title>Webfont generator</title>
         <meta name="viewport" content="width=device-width, initial-scale=1" />
-
-        <link href='//fonts.googleapis.com/css?family=Lobster' rel='stylesheet' type='text/css'>
-        <link rel="stylesheet" href="assets/css/uikit.almost-flat.min.css" />
-        <link rel="stylesheet" href="assets/css/uikit.addons.min.css" />
-        <link rel="stylesheet" href="assets/css/styles.css" />
+        <link href="https://fonts.googleapis.com/css?family=Patua+One" rel="stylesheet">
+        <link rel="stylesheet" href="/assets/css/uikit.min.css" />
+        <link rel="stylesheet" href="/assets/css/styles.css" />
     </head>
     <body>
         <div class="uk-width-medium-1-2 uk-article uk-container-center">
@@ -22,16 +17,20 @@
                     {% if error %}
                     <p class="uk-alert uk-alert-danger">{{ error }}</p>
                     {% endif %}
-                    <div class="uk-form-row uk-form-file">
-                        <button class="uk-button">Select a TTF font</button>
-                        <input id="file" type="file" name="file" value="" />
+
+                    <div class="uk-margin" uk-margin>
+                        <div uk-form-custom="target: true">
+                            <input type="file" name="file ">
+                            <input class="uk-input uk-form-width-medium" type="text" placeholder="Select an OTF/TTF file" disabled>
+                        </div>
+                        <button class="uk-button uk-button-primary"><span uk-icon="cog"></span> Convert</button>
                     </div>
                 </div>
-
-                <button class="uk-button uk-button-primary"><i class="uk-icon-gear"></i> Convert</button>
             </form>
         </div>
-        <script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
-        <script src="assets/js/uikit.min.js"></script>
+        <p class="disclaimer">Source available at <a href="https://github.com/ambroisemaupate/webfont-generator">github.com/ambroisemaupate/webfont-generator</a></p>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+        <script src="/assets/js/uikit.min.js"></script>
+        <script src="/assets/js/uikit-icons.min.js"></script>
     </body>
 </html>

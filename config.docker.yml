@@ -1,0 +1,16 @@
+converters:
+    ttf:
+        path: /usr/bin/fontforge
+        class: WebfontGenerator\Converters\TrueTypeConverter
+    svg:
+        path: /usr/bin/fontforge
+        class: WebfontGenerator\Converters\ScalableVectorGraphicsConverter
+    woff:
+        path: /usr/bin/sfnt2woff
+        class: WebfontGenerator\Converters\WoffConverter
+    woff2:
+        path: /usr/bin/woff2_compress
+        class: WebfontGenerator\Converters\Woff2Converter
+    eot:
+        path: /bin/ttf2eot
+        class: WebfontGenerator\Converters\EmbedOpenTypeConverter

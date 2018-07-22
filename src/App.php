@@ -152,10 +152,10 @@ class App
 
                     return $font->getZipFile();
                 } else {
-                    throw new \Exception("You must only upload true-type (.ttf) font files (your file is " . $this->file->getMimeType() . ").", 1);
+                    throw new \Exception("You must only upload true-type (.ttf) or opentype (.otf) font files (your file is " . $this->file->getMimeType() . ").", 1);
                 }
             } else {
-                throw new \Exception("You must choose a TTF font file.", 1);
+                throw new \Exception("You must choose an OTF/TTF font file.", 1);
             }
         }
 

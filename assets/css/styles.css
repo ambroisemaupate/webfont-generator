@@ -4,46 +4,38 @@
  * Ambroise Maupate
  */
 
-html {
+body {
     background-color: #EFEFEF;
+    font-family: -apple-system,system-ui,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+    min-height: 100vh;
+    padding: 50px 0;
 }
 .uk-container-center {
     max-width: 400px;
-    margin: 50px auto;
-    text-align: center;
-    border: 1px solid   #00a8e6;
+    margin: 0px auto;
+    /* text-align: center; */
+    border: 1px solid #CCCCCC;
     background-color: white;
+    overflow: hidden;
+}
+.disclaimer {
+    max-width: 400px;
+    margin: 10px auto;
+    font-size: 10px;
+    color: #CCCCCC;
+}
+.disclaimer a {
+    color: #CCCCCC;
 }
 .inner-form {
-    padding: 20px;
+    padding: 10px 20px;
 }
 .inner-form h1 {
-    font-family: 'Lobster', cursive;
-    color: #00a8e6;
-    font-size: 60px;
-    line-height: 53px;
+    color: #999999;
+    font-family: "Patua One",-apple-system,system-ui,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+    font-size: 50px;
+    letter-spacing: 0.01em;
+    text-align: center;
+    line-height: 1em;
     padding: 20px 0px;
-}
-
-.uk-button {
-    font-size: 16px;
-}
-
-.uk-button-primary {
-    display: block;
-    width: 100%;
-    line-height: 45px;
-    border:none;
-}
-.uk-button-primary:hover {
-    border:none;
-}
-
-.uk-button,
-.uk-alert {
-    -moz-border-radius: 0px;
-    -o-border-radius: 0px;
-    -ms-border-radius: 0px;
-    -webkit-border-radius: 0px;
-    border-radius: 0px;
 }
