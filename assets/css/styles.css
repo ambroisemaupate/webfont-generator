@@ -8,10 +8,12 @@ body {
     background-color: #EFEFEF;
     font-family: -apple-system,system-ui,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
     min-height: 100vh;
+    box-sizing: border-box;
     padding: 50px 0;
 }
 .uk-container-center {
     max-width: 400px;
+    box-sizing: border-box;
     margin: 0px auto;
     /* text-align: center; */
     border: 1px solid #CCCCCC;
@@ -20,6 +22,7 @@ body {
 }
 .disclaimer {
     max-width: 400px;
+    box-sizing: border-box;
     margin: 10px auto;
     font-size: 10px;
     color: #CCCCCC;
