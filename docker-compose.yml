@@ -1,7 +1,7 @@
 version: "3"
 services:
   app:
-    image: webfontgenerator
+    image: ambroisemaupate/webfontgenerator
     ports:
       - "8080:80"
     volumes:

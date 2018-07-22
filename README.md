@@ -7,7 +7,7 @@ Web interface written in PHP to wrap many font converting tools.
 * [sfnt2woff](http://people.mozilla.com/~jkew/woff/)
 * [woff2_compress](https://github.com/google/woff2)
 
-![Webfont generator screenshot](/screenshot.png)
+![Webfont generator screenshot](/screenshot.jpg)
 
 ## Usage with Docker
 
