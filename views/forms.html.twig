@@ -2,10 +2,34 @@
 
 {%- block form_errors -%}
     {%- if errors|length > 0 -%}
-        <div>
+        <div class="uk-margin">
             {%- for error in errors -%}
                 <p class="uk-alert uk-alert-danger uk-text-small">{{ error.message }}</p>
             {%- endfor -%}
         </div>
     {%- endif -%}
 {%- endblock form_errors -%}
+
+{%- block checkbox_row -%}
+    {%- set widget_attr = {} -%}
+    {%- if help is not empty -%}
+        {%- set widget_attr = {attr: {'aria-describedby': id ~"_help"}} -%}
+    {%- endif -%}
+    <div class="uk-margin">
+        {{- form_errors(form) -}}
+        <label>{{- form_widget(form, widget_attr) }} {{ label -}}</label>
+        {{- form_help(form) -}}
+    </div>
+{%- endblock checkbox_row -%}
+
+{% block form_help -%}
+    {%- if help is not empty -%}
+        <p id="{{ id }}_help" class="help-text uk-margin-remove-top uk-text-meta uk-text-muted">
+            {%- if translation_domain is same as(false) -%}
+                {{- help -}}
+            {%- else -%}
+                {{- help|trans({}, translation_domain) -}}
+            {%- endif -%}
+        </p>
+    {%- endif -%}
+{%- endblock form_help %}

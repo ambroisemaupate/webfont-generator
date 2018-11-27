@@ -2,9 +2,12 @@
 namespace WebfontGenerator\Form;
 
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Validator\Constraints\All;
+use Symfony\Component\Validator\Constraints\Choice;
 use Symfony\Component\Validator\Constraints\File;
 use Symfony\Component\Validator\Constraints\NotBlank;
 
@@ -38,6 +41,12 @@ class FontType extends AbstractType
                         ]
                     ])
                 ]
+            ])
+            ->add('subset_latin', CheckboxType::class, [
+                'label' => 'Subset fonts to Latin range',
+                'help' => 'Only export glyphs within unicode 0000 to 05FF.',
+                'required' => false,
+                'attr' => ['class' => 'uk-checkbox']
             ])
         ;
     }

@@ -20,3 +20,5 @@ converters:
         # http://code.google.com/p/ttf2eot/
         path: /usr/bin/ttf2eot
         class: WebfontGenerator\Converters\EmbedOpenTypeConverter
+
+pyftsubset: /usr/local/bin/pyftsubset

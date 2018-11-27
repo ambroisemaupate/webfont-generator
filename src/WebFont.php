@@ -26,6 +26,7 @@
 namespace WebfontGenerator;
 
 use WebfontGenerator\Converters\ConverterInterface;
+use WebfontGenerator\Subsetters\PythonFontSubset;
 use WebfontGenerator\Util\StringHandler;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\HttpFoundation\File\File;
@@ -50,14 +51,19 @@ class WebFont
      * @var ConverterInterface[]
      */
     protected $converters;
+    /**
+     * @var null|PythonFontSubset
+     */
+    protected $fontSubset;
 
     /**
      * WebFont constructor.
      *
-     * @param Filesystem $fs
-     * @param array $converters
+     * @param Filesystem            $fs
+     * @param array                 $converters
+     * @param PythonFontSubset|null $fontSubset
      */
-    public function __construct(Filesystem $fs, array $converters)
+    public function __construct(Filesystem $fs, array $converters, PythonFontSubset $fontSubset = null)
     {
         $this->id = uniqid();
         $this->originalFiles = [];
@@ -66,6 +72,7 @@ class WebFont
         $this->distDir = ROOT . "/dist";
         $this->outputFiles = [];
         $this->converters = $converters;
+        $this->fontSubset = $fontSubset;
 
         if (!$this->fs->exists($this->buildDir)) {
             $this->fs->mkdir($this->buildDir);
@@ -162,6 +169,23 @@ class WebFont
         foreach ($this->getOriginalFiles() as $originalFile) {
             foreach ($this->converters as $converter) {
                 $this->addOutputFile($converter->convert($originalFile));
+            }
+        }
+    }
+
+    /**
+     *
+     */
+    public function subsetAndConvert()
+    {
+        if ($this->fontSubset === null) {
+            throw new \RuntimeException('Cannot subset with null Font Subsetter.');
+        }
+
+        foreach ($this->getOriginalFiles() as $originalFile) {
+            $subsetFont = $this->fontSubset->subset($originalFile);
+            foreach ($this->converters as $converter) {
+                $this->addOutputFile($converter->convert($subsetFont));
             }
         }
     }

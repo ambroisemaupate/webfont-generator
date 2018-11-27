@@ -14,3 +14,5 @@ converters:
     eot:
         path: /bin/ttf2eot
         class: WebfontGenerator\Converters\EmbedOpenTypeConverter
+
+pyftsubset: /usr/local/bin/pyftsubset

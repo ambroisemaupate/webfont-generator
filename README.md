@@ -8,7 +8,7 @@ Built thanks to:
 * [sfnt2woff](https://github.com/kseo/sfnt2woff)
 * [woff2_compress](https://github.com/google/woff2)
 
-![Webfont generator screenshot](/screenshot.jpg)
+![Webfont generator screenshot](/screenshot@2x.png)
 
 ## Usage with Docker
 

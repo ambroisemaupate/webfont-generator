@@ -48,6 +48,7 @@ use Twig\Loader\FilesystemLoader;
 use Twig\RuntimeLoader\FactoryRuntimeLoader;
 use WebfontGenerator\Converters\ConverterInterface;
 use WebfontGenerator\Form\FontType;
+use WebfontGenerator\Subsetters\PythonFontSubset;
 
 /**
  * Class App
@@ -107,18 +108,28 @@ class App
     {
         if (!empty($this->getConfig()['converters'])) {
             $formFactory = $this->createFormFactory();
-            $form = $formFactory->createNamed('fonts', FontType::class);
+            $form = $formFactory->createNamed('fonts', FontType::class, [
+                'subset_latin' => true,
+            ]);
             $form->handleRequest($request);
 
             if ($form->isSubmitted() && $form->isValid()) {
                 try {
                     $fs = new Filesystem();
-                    $font = new WebFont($fs, $this->getFontConverters());
+                    $font = new WebFont(
+                        $fs,
+                        $this->getFontConverters(),
+                        $this->getFontSubsetter()
+                    );
                     /** @var UploadedFile $file */
                     foreach ($form->get('files')->getData() as $file) {
                         $font->addFontFile($file);
                     }
-                    $font->convert();
+                    if ($form->get('subset_latin')->getData() === true) {
+                        $font->subsetAndConvert();
+                    } else {
+                        $font->convert();
+                    }
 
                     $zipFile = $font->getZipFile();
                     $response = new BinaryFileResponse($zipFile);
@@ -204,7 +215,7 @@ class App
         if ($c instanceof ConverterInterface) {
             return $c;
         } else {
-            throw new \RuntimeException($class . "must implement ConverterInterface.", 1);
+            throw new \RuntimeException($class . "must implement ConverterInterface.");
         }
     }
 
@@ -221,5 +232,16 @@ class App
         }
 
         return $converters;
+    }
+
+    /**
+     * @return null|PythonFontSubset
+     */
+    private function getFontSubsetter()
+    {
+        if (!empty($this->config['pyftsubset'])) {
+            return new PythonFontSubset($this->config['pyftsubset']);
+        }
+        return null;
     }
 }

@@ -10,9 +10,13 @@
         "symfony/validator": "^4.1",
         "symfony/twig-bridge": "^4.1",
         "symfony/translation": "^4.1",
-        "symfony/config": "^4.1"
+        "symfony/config": "^4.1",
+        "ext-zip": "*"
     },
     "autoload": {
         "psr-4": {"WebfontGenerator\\": "src/"}
+    },
+    "require-dev": {
+        "squizlabs/php_codesniffer": "^3.3"
     }
 }
