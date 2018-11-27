@@ -1,5 +1,5 @@
 # webfont-generator
-**Convert one or many OTF/TTF files in EOT, SVG, WOFF and WOFF2.**
+**Subset and convert one or many OTF/TTF files in EOT, SVG, WOFF and WOFF2.**
 
 Built thanks to:
 
@@ -7,6 +7,7 @@ Built thanks to:
 * [ttf2eot](https://github.com/wget/ttf2eot)
 * [sfnt2woff](https://github.com/kseo/sfnt2woff)
 * [woff2_compress](https://github.com/google/woff2)
+* [fonttools (pyftsubset)](https://github.com/fonttools/fonttools#other-tools)
 
 ![Webfont generator screenshot](/screenshot@2x.png)
 
