@@ -110,6 +110,7 @@ class App
             $formFactory = $this->createFormFactory();
             $form = $formFactory->createNamed('fonts', FontType::class, [
                 'subset_latin' => true,
+                'subset_ranges' => PythonFontSubset::getBaseSet()
             ]);
             $form->handleRequest($request);
 
@@ -119,7 +120,8 @@ class App
                     $font = new WebFont(
                         $fs,
                         $this->getFontConverters(),
-                        $this->getFontSubsetter()
+                        $this->getFontSubsetter(),
+                        $form->get('subset_ranges')->getData()
                     );
                     /** @var UploadedFile $file */
                     foreach ($form->get('files')->getData() as $file) {

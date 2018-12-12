@@ -12,7 +12,7 @@ body {
     padding: 50px 0;
 }
 .uk-container-center {
-    max-width: 400px;
+    max-width: 750px;
     box-sizing: border-box;
     margin: 0px auto;
     /* text-align: center; */
@@ -21,7 +21,7 @@ body {
     overflow: hidden;
 }
 .disclaimer {
-    max-width: 400px;
+    max-width: 500px;
     box-sizing: border-box;
     margin: 10px auto;
     font-size: 10px;
@@ -34,7 +34,7 @@ body {
     padding: 20px 20px 0px;
 }
 .main-title {
-    max-width: 400px;
+    max-width: 750px;
     margin: 0px auto;
     color: #999999;
     font-family: "Patua One",-apple-system,system-ui,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;

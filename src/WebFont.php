@@ -55,6 +55,10 @@ class WebFont
      * @var null|PythonFontSubset
      */
     protected $fontSubset;
+    /**
+     * @var array
+     */
+    protected $unicodeRanges;
 
     /**
      * WebFont constructor.
@@ -62,8 +66,9 @@ class WebFont
      * @param Filesystem            $fs
      * @param array                 $converters
      * @param PythonFontSubset|null $fontSubset
+     * @param array                 $unicodeRanges
      */
-    public function __construct(Filesystem $fs, array $converters, PythonFontSubset $fontSubset = null)
+    public function __construct(Filesystem $fs, array $converters, PythonFontSubset $fontSubset = null, $unicodeRanges = [])
     {
         $this->id = uniqid();
         $this->originalFiles = [];
@@ -73,6 +78,7 @@ class WebFont
         $this->outputFiles = [];
         $this->converters = $converters;
         $this->fontSubset = $fontSubset;
+        $this->unicodeRanges = $unicodeRanges;
 
         if (!$this->fs->exists($this->buildDir)) {
             $this->fs->mkdir($this->buildDir);
@@ -183,7 +189,7 @@ class WebFont
         }
 
         foreach ($this->getOriginalFiles() as $originalFile) {
-            $subsetFont = $this->fontSubset->subset($originalFile);
+            $subsetFont = $this->fontSubset->subset($originalFile, $this->unicodeRanges);
             foreach ($this->converters as $converter) {
                 $this->addOutputFile($converter->convert($subsetFont));
             }

@@ -7,9 +7,9 @@ use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Validator\Constraints\All;
-use Symfony\Component\Validator\Constraints\Choice;
 use Symfony\Component\Validator\Constraints\File;
 use Symfony\Component\Validator\Constraints\NotBlank;
+use WebfontGenerator\Subsetters\PythonFontSubset;
 
 /**
  * Class FontType
@@ -44,9 +44,16 @@ class FontType extends AbstractType
             ])
             ->add('subset_latin', CheckboxType::class, [
                 'label' => 'Subset fonts to Latin range',
-                'help' => 'Only export glyphs within unicode 0000 to 05FF.',
+                'help' => 'Only export glyphs within U+0000 to 20CF.',
                 'required' => false,
                 'attr' => ['class' => 'uk-checkbox']
+            ])
+            ->add('subset_ranges', ChoiceType::class, [
+                'label' => 'Subset ranges',
+                'help' => 'Choose manually your font sub-set ranges (http://jrgraphix.net/research/unicode.php).',
+                'choices' => PythonFontSubset::$ranges,
+                'multiple' => true,
+                'expanded' => true,
             ])
         ;
     }

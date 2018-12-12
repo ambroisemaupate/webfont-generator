@@ -33,3 +33,31 @@
         </p>
     {%- endif -%}
 {%- endblock form_help %}
+
+{%- block choice_row -%}
+    {%- set widget_attr = {} -%}
+    {%- if help is not empty -%}
+        {%- set widget_attr = {attr: {'aria-describedby': id ~"_help"}} -%}
+    {%- endif -%}
+    <div class="uk-margin">
+        {{- form_label(form) -}}
+        {{- form_errors(form) -}}
+        {{- form_help(form) -}}
+        {{- form_widget(form, widget_attr) -}}
+    </div>
+{%- endblock choice_row -%}
+
+{%- block choice_widget_expanded -%}
+    <div {{ block('widget_container_attributes') }}>
+        <div class="uk-form-controls uk-flex uk-flex-left uk-flex-wrap">
+        {%- for child in form %}
+            <div class="uk-width-1-2">
+                <label>{{- form_widget(child) }} {{ child.vars.label|humanize -}}</label>
+                <code class="help-text uk-margin-remove uk-text-meta uk-text-muted uk-text-small">
+                    {{- child.vars.value -}}
+                </code>
+            </div>
+        {% endfor -%}
+        </div>
+    </div>
+{%- endblock choice_widget_expanded -%}
