@@ -43,9 +43,15 @@ class PythonFontSubset
         'lao' => 'U+0E80-0EFF',
         'tibetan' => 'U+0F00-0FFF',
         // …
+        'latin_extended_additional' => 'U+1E00-1EFF',
+        'greek_extended' => 'U+1F00-1FFF',
         'general_punctuation' => 'U+2000-206F',
         'superscripts_subscripts' => 'U+2070-209F',
         'currency_symbols' => 'U+20A0-20CF',
+        //…
+        'number_forms' => 'U+2150-218F',
+        'arrows' => 'U+2190-21FF',
+        'mathematical_operators' => 'U+2200-22FF',
     ];
 
     public function __construct($binPath)

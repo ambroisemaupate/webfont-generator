@@ -23,8 +23,6 @@
                     <div class="uk-margin" uk-margin>
                         {{ form_errors(form) }}
                         {{ form_errors(form.files) }}
-                        {{ form_row(form.subset_latin) }}
-
                         <p class="uk-text-meta">Upload one or many ttf/otf font files.</p>
                         <div uk-form-custom="target: true">
                             {{ form_widget(form.files) }}
@@ -32,6 +30,7 @@
                         </div>
                         <button class="uk-button uk-button-primary"><span uk-icon="cog"></span> Convert</button>
                     </div>
+                    {{ form_row(form.subset_latin) }}
                     {{ form_rest(form) }}
                 </div>
             {{ form_end(form) }}

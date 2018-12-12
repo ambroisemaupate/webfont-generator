@@ -44,13 +44,13 @@ class FontType extends AbstractType
             ])
             ->add('subset_latin', CheckboxType::class, [
                 'label' => 'Subset fonts to Latin range',
-                'help' => 'Only export glyphs within U+0000 to 20CF.',
+                'help' => 'Only export glyphs within selected ranges.',
                 'required' => false,
                 'attr' => ['class' => 'uk-checkbox']
             ])
             ->add('subset_ranges', ChoiceType::class, [
                 'label' => 'Subset ranges',
-                'help' => 'Choose manually your font sub-set ranges (http://jrgraphix.net/research/unicode.php).',
+                'help' => 'Choose your Unicode ranges (http://jrgraphix.net/research/unicode.php).',
                 'choices' => PythonFontSubset::$ranges,
                 'multiple' => true,
                 'expanded' => true,
