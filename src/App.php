@@ -106,7 +106,8 @@ class App
      */
     public function handle(Request $request)
     {
-        if (!empty($this->getConfig()['converters'])) {
+        if (!empty($this->getConfig()['converters'])) 
+		{
             $formFactory = $this->createFormFactory();
             $form = $formFactory->createNamed('fonts', FontType::class, [
                 'subset_latin' => true,
@@ -114,7 +115,8 @@ class App
             ]);
             $form->handleRequest($request);
 
-            if ($form->isSubmitted() && $form->isValid()) {
+            if ($form->isSubmitted() && $form->isValid()) 
+			{
                 try {
                     $fs = new Filesystem();
                     $font = new WebFont(
@@ -124,12 +126,16 @@ class App
                         $form->get('subset_ranges')->getData()
                     );
                     /** @var UploadedFile $file */
-                    foreach ($form->get('files')->getData() as $file) {
+                    foreach ($form->get('files')->getData() as $file) 
+					{
                         $font->addFontFile($file);
                     }
-                    if ($form->get('subset_latin')->getData() === true) {
+                    if ($form->get('subset_latin')->getData() === true) 
+					{
                         $font->subsetAndConvert();
-                    } else {
+                    } 
+					else 
+					{
                         $font->convert();
                     }
 
@@ -141,8 +147,10 @@ class App
                     );
                     $response->prepare($request);
                     return $response;
-                } catch (\RuntimeException $exception) {
-                    $form->addError(new FormError($exception->getMessage()));
+                } 
+				catch (\RuntimeException $exception) 
+				{
+					$form->addError(new FormError($exception->getMessage()));
                 }
             }
             $this->assignation['form'] = $form->createView();
@@ -151,18 +159,21 @@ class App
             $response->setCharset('UTF-8');
             $response->prepare($request);
 
-            return $response;
-        } else {
+			return $response;
+        } 
+		else 
+		{
             throw new \Exception("You must define converters path in your “config.yml” file.", 1);
         }
-    }
+	}
 
     /**
      * @return null|Environment
      */
-    public function getTwig()
-    {
-        if (null === $this->twig) {
+	public function getTwig()
+	{
+        if (null === $this->twig) 
+		{
             $defaultFormTheme = 'form_div_layout.html.twig';
             $appVariableReflection = new \ReflectionClass('\Symfony\Bridge\Twig\AppVariable');
             $vendorTwigBridgeDirectory = dirname($appVariableReflection->getFileName());
@@ -179,11 +190,7 @@ class App
             );
 
             $formEngine = new TwigRendererEngine([$defaultFormTheme], $this->twig);
-            $this->twig->addRuntimeLoader(new FactoryRuntimeLoader([
-                FormRenderer::class => function () use ($formEngine) {
-                    return new FormRenderer($formEngine);
-                },
-            ]));
+            $this->twig->addRuntimeLoader(new FactoryRuntimeLoader([ FormRenderer::class => function () use ($formEngine) { return new FormRenderer($formEngine); }, ]));
             $this->twig->addExtension(new FormExtension());
         }
 
@@ -195,8 +202,8 @@ class App
      */
     public function getConfig()
     {
-        if (null === $this->config &&
-            file_exists(ROOT . "/" . $this->configPath)) {
+        if (null === $this->config && file_exists(ROOT . "/" . $this->configPath)) 
+		{
             $yaml = new Parser();
             $this->config = $yaml->parse(file_get_contents(ROOT . "/" . $this->configPath));
         }
@@ -214,9 +221,12 @@ class App
     {
         $converterClass = $class;
         $c = new $converterClass($path);
-        if ($c instanceof ConverterInterface) {
+        if ($c instanceof ConverterInterface) 
+		{
             return $c;
-        } else {
+        } 
+		else 
+		{
             throw new \RuntimeException($class . "must implement ConverterInterface.");
         }
     }
@@ -227,8 +237,10 @@ class App
     protected function getFontConverters()
     {
         $converters = [];
-        foreach ($this->config['converters'] as $converter) {
-            if (!empty($converter['path']) && !empty($converter['class'])) {
+        foreach ($this->config['converters'] as $converter) 
+		{
+            if (!empty($converter['path']) && !empty($converter['class'])) 
+			{
                 $converters[] = $this->getFontConverter($converter['class'], $converter['path']);
             }
         }
@@ -241,7 +253,8 @@ class App
      */
     private function getFontSubsetter()
     {
-        if (!empty($this->config['pyftsubset'])) {
+        if (!empty($this->config['pyftsubset'])) 
+		{
             return new PythonFontSubset($this->config['pyftsubset']);
         }
         return null;

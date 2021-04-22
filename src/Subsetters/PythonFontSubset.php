@@ -56,7 +56,8 @@ class PythonFontSubset
 
     public function __construct($binPath)
     {
-        $this->binPath = $binPath;
+		//If we use usr/bin for pyftsubset on Linux
+		$this->binPath = $binPath;	
     }
 
     /**
@@ -94,18 +95,20 @@ class PythonFontSubset
      *
      * @return File
      */
-    public function subset(File $input, array $unicodes = [])
-    {
-        if (!file_exists($this->binPath)) {
-            throw new \RuntimeException('pyftsubset binary could not be found at path '.$this->binPath);
-        }
-        $outFile = $this->getSubsetPath($input);
-
-        if (count($unicodes) === 0) {
-            $unicodes = $this->getBaseSet();
-        }
-
-        $cmd = $this->binPath.' "'.$input->getRealPath().'" --unicodes="'. implode(',', $unicodes).'" --output-file="'.$outFile.'"';
+	 public function subset(File $input, array $unicodes = [])
+	 {
+		if (!file_exists($this->binPath))
+		{
+			//throw new \RuntimeException('pyftsubset binary could not be found at path ' . $this->binPath);
+		}
+		$outFile = $this->getSubsetPath($input);
+		
+		if (count($unicodes) === 0) 
+		{
+			$unicodes = $this->getBaseSet();
+		}
+		
+		$cmd = $this->binPath . ' "'.$input->getRealPath().'" --unicodes="'. implode(',', $unicodes).'" --output-file="'.$outFile.'"';
 
         exec(
             $cmd,
@@ -113,9 +116,12 @@ class PythonFontSubset
             $return
         );
 
-        if (0 !== $return) {
+        if (0 !== $return) 
+		{
             throw new \RuntimeException('pyftsubset could not subset '.$input->getBasename().' font file.');
-        } else {
+        } 
+		else 
+		{
             return new File($outFile);
         }
     }

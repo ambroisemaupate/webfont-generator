@@ -1,0 +1,18 @@
+converters:
+    ttf:
+        path: /usr/bin/fontforge.exe
+        class: WebfontGenerator\Converters\TrueTypeConverter
+    svg:
+        path: /usr/bin/fontforge.exe
+        class: WebfontGenerator\Converters\ScalableVectorGraphicsConverter
+    woff:
+        path: /usr/bin/sfnt2woff.exe
+        class: WebfontGenerator\Converters\WoffConverter
+    woff2:
+        path: /usr/bin/woff2_compress.exe
+        class: WebfontGenerator\Converters\Woff2Converter
+    eot:
+        path: /usr/bin/ttf2eot.exe
+        class: WebfontGenerator\Converters\EmbedOpenTypeConverter
+
+pyftsubset: /usr/local/bin/pyftsubset

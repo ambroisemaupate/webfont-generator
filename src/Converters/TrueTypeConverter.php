@@ -26,6 +26,7 @@
 namespace WebfontGenerator\Converters;
 
 use WebfontGenerator\Util\StringHandler;
+use WebfontGenerator\Converters\Driver;
 use Symfony\Component\HttpFoundation\File\File;
 
 /**
@@ -39,26 +40,51 @@ class TrueTypeConverter implements ConverterInterface
 
     public function __construct($binPath)
     {
-        $this->fontforge = $binPath;
+		$this->driver = new Driver();
+		if (('\\' === \DIRECTORY_SEPARATOR) && (PHP_OS !== 'Linux')) 
+		{	
+			//If we use usr/bin for fontforge on Windows
+			if ($this->driver->file_exists($binPath))
+			{
+				$this->fontforge = $binPath;
+			}
+			else
+			{
+				//Rename config-default-win.yml to config.yml
+				$this->fontforge = $binPath . '.exe';
+			}		
+		}
+		else
+		{
+			//If we use usr/bin for fontforge on Linux
+			$this->fontforge = $binPath;
+		}
     }
 
     public function convert(File $input)
     {
-        if (!file_exists($this->fontforge)) {
-            throw new \RuntimeException('Fontforge could not be found.');
+	
+		if (!$this->driver->file_exists($this->fontforge))
+		{
+			throw new \RuntimeException("could not be found: ".$this->fontforge);
         }
-
-        $output = [];
+               
+        $output = array([]);
         $outFile = $this->getTTFPath($input);
-        exec(
-            $this->fontforge.' -script '.ROOT.'/assets/scripts/tottf.pe "'.$input->getRealPath().'"',
+		$inpFile = $input->getRealPath();
+		$return = 0;
+		
+        exec($this->fontforge . ' -script '.ROOT.'/assets/scripts/tottf.pe "'.$inpFile.'"',
             $output,
             $return
         );
-
-        if (0 !== $return) {
-            throw new \RuntimeException('Fontforge could not convert '.$input->getBasename().' to TrueType format.');
-        } else {
+		
+		if (0 !== $return) 
+		{
+            throw new \RuntimeException('Fontforge could not convert '.$input->getBasename().' to TrueType format on ' . PHP_OS . ' .');
+        } 
+		else 
+		{
             return new File($outFile);
         }
     }

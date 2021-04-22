@@ -69,7 +69,7 @@ class WebFont
      * @param array                 $unicodeRanges
      */
     public function __construct(Filesystem $fs, array $converters, PythonFontSubset $fontSubset = null, $unicodeRanges = [])
-    {
+	{
         $this->id = uniqid();
         $this->originalFiles = [];
         $this->fs = $fs;
@@ -80,13 +80,16 @@ class WebFont
         $this->fontSubset = $fontSubset;
         $this->unicodeRanges = $unicodeRanges;
 
-        if (!$this->fs->exists($this->buildDir)) {
+		if (!$this->fs->exists($this->buildDir)) 
+		{
             $this->fs->mkdir($this->buildDir);
         }
-        if (!$this->fs->exists($this->distDir)) {
+		
+		if (!$this->fs->exists($this->distDir)) 
+		{
             $this->fs->mkdir($this->distDir);
         }
-    }
+	}
 
     /**
      * @param UploadedFile $tmpFile
@@ -134,15 +137,18 @@ class WebFont
         $zip = new \ZipArchive();
         $zip->open($zipPath, \ZipArchive::CREATE);
 
-        foreach ($this->getOriginalFiles() as $originalFile) {
+        foreach ($this->getOriginalFiles() as $originalFile) 
+		{
             $zip->addFile($originalFile->getRealpath(), 'original-'.$originalFile->getBasename());
         }
 
-        foreach ($this->outputFiles as $file) {
+        foreach ($this->outputFiles as $file) 
+		{
             $zip->addFile($file->getRealpath(), $file->getBasename());
         }
 
-        if (!$zip->close()) {
+        if (!$zip->close()) 
+		{
             throw new \Exception("Impossible to create ZIP archive", 1);
         }
 
@@ -156,7 +162,8 @@ class WebFont
      */
     public function getZipPath()
     {
-        if (null === $this->getFirstOriginalFile()) {
+        if (null === $this->getFirstOriginalFile()) 
+		{
             throw new \RuntimeException('No font file have been added yet.');
         }
         return $this->distDir .
@@ -170,29 +177,35 @@ class WebFont
     /**
      *
      */
-    public function convert()
-    {
-        foreach ($this->getOriginalFiles() as $originalFile) {
-            foreach ($this->converters as $converter) {
-                $this->addOutputFile($converter->convert($originalFile));
-            }
-        }
-    }
+	public function convert()
+	{
+		foreach ($this->getOriginalFiles() as $originalFile) 
+		{
+			foreach ($this->converters as $converter) 
+			{
+				$this->addOutputFile($converter->convert($originalFile));
+			}
+		}
+	}
 
     /**
      *
      */
-    public function subsetAndConvert()
-    {
-        if ($this->fontSubset === null) {
+	public function subsetAndConvert()
+	{
+		if ($this->fontSubset === null) 
+		{
             throw new \RuntimeException('Cannot subset with null Font Subsetter.');
-        }
-
-        foreach ($this->getOriginalFiles() as $originalFile) {
+		}
+		
+		foreach ($this->getOriginalFiles() as $originalFile) 
+		{
             $subsetFont = $this->fontSubset->subset($originalFile, $this->unicodeRanges);
-            foreach ($this->converters as $converter) {
+			
+            foreach ($this->converters as $converter) 
+			{
                 $this->addOutputFile($converter->convert($subsetFont));
             }
-        }
-    }
+		}
+	}
 }

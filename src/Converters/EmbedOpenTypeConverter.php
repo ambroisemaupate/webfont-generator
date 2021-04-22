@@ -26,6 +26,7 @@
 namespace WebfontGenerator\Converters;
 
 use WebfontGenerator\Util\StringHandler;
+use WebfontGenerator\Converters\Driver;
 use Symfony\Component\HttpFoundation\File\File;
 
 /**
@@ -39,28 +40,54 @@ class EmbedOpenTypeConverter implements ConverterInterface
 
     public function __construct($binPath)
     {
-        $this->ttf2eot = $binPath;
+		$this->driver = new Driver();
+		if (('\\' === \DIRECTORY_SEPARATOR) && (PHP_OS !== 'Linux')) 
+		{	
+			//If we use usr/bin for ttf2eot on Windows
+			if ($this->driver->file_exists($binPath))
+			{
+				$this->ttf2eot = $binPath;
+			}
+			else
+			{
+				//Rename config-default-win.yml to config.yml
+				$this->ttf2eot = $binPath . '.exe';
+			}		
+		}
+		else
+		{
+			//If we use usr/bin for ttf2eot on Linux
+			$this->ttf2eot = $binPath;
+		}
     }
 
     public function convert(File $input)
     {
-        if (!file_exists($this->ttf2eot)) {
-            throw new \RuntimeException('ttf2eot could not be found.');
+        if (!$this->driver->file_exists($this->ttf2eot)) 
+		{
+            throw new \RuntimeException($this->ttf2eot . ' (ttf2eot) could not be found.');
         }
-        $eotPath = $this->getEOTPath($input);
-        $output = [];
+		
+        $output = array([]);
+        $outFile = $this->getEOTPath($input);
+		$inpFile = $input->getRealPath();
+ 		$return = 0;
+		
         exec(
-            $this->ttf2eot.' "'.$input->getRealPath(). '" > ' . $eotPath.'',
+            $this->ttf2eot . ' "'.$input->getRealPath(). '" > ' . $outFile .'',
             $output,
             $return
         );
 
         $outputHuman = implode('<br/>', $output);
 
-        if (0 !== $return) {
+        if (0 !== $return) 
+		{
             throw new \RuntimeException('ttf2eot could not convert '.$input->getBasename().' to EOT format.' . $outputHuman);
-        } else {
-            return new File($eotPath);
+        } 
+		else 
+		{
+            return new File($outFile);
         }
     }
 

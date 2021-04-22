@@ -26,6 +26,7 @@
 namespace WebfontGenerator\Converters;
 
 use WebfontGenerator\Util\StringHandler;
+use WebfontGenerator\Converters\Driver;
 use Symfony\Component\HttpFoundation\File\File;
 
 /**
@@ -39,26 +40,62 @@ class ScalableVectorGraphicsConverter implements ConverterInterface
 
     public function __construct($binPath)
     {
-        $this->fontforge = $binPath;
+		$this->driver = new Driver();
+		if (('\\' === \DIRECTORY_SEPARATOR) && (PHP_OS !== 'Linux'))
+		{	
+			//If we use usr/bin for sfnt2woff on Windows
+			if ($this->driver->file_exists($binPath))
+			{
+				$this->fontforge = $binPath;
+			}
+			else
+			{
+				//Rename config-default-win.yml to config.yml
+				$this->fontforge = $binPath . '.exe';
+			}		
+		}
+		else
+		{
+			//If we use usr/bin for sfnt2woff on Linux
+			$this->fontforge = $binPath;
+		}
     }
+
 
     public function convert(File $input)
     {
-        if (!file_exists($this->fontforge)) {
-            throw new \RuntimeException('Fontforge could not be found.');
+        if (!$this->driver->file_exists($this->fontforge)) 
+		{
+			throw new \RuntimeException("could not be found: ".$this->fontforge);
         }
-
-        $output = [];
-        $outFile = $this->getSVGPath($input);
+		
+        $output = array([]);
+		$return = 0;
+		
+        if (!$this->driver->file_exists($outFile = $this->getSVGPath($input))) 
+		{
+			$outFile = str_replace(array('.woff', '.OTF.woff'), '.TTF.woff', $this->getSVGPath($input));
+			//print 'ATM exists not -o ' . $outFile . ' OK';
+        }
+        
+		if (!$this->driver->file_exists($inpFile = $input->getRealPath())) 
+		{
+			$inpFile = str_replace(array('.woff', '.OTF.woff'), '.TTF.woff', $input->getRealPath());
+			//print 'ATM exists not -i ' . $inpFile . ' ?';			
+        } 
+		//print '/usr/bin/fontforge.exe -script C:\Wamp\www\webfont/assets/scripts/tosvg.pe ' . $inpFile . ' ';
         exec(
-            $this->fontforge.' -script '.ROOT.'/assets/scripts/tosvg.pe "'.$input->getRealPath().'"',
+            $this->fontforge.' -script '. str_replace('/\/', '/', ROOT) .'/assets/scripts/tosvg.pe "' . $inpFile . '"',
             $output,
             $return
         );
 
-        if (0 !== $return) {
+        if (0 !== $return) 
+		{
             throw new \RuntimeException('Fontforge could not convert '.$input->getBasename().' to SVG format.');
-        } else {
+        } 
+		else 
+		{
             return new File($outFile);
         }
     }

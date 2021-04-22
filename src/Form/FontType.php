@@ -32,10 +32,11 @@ class FontType extends AbstractType
                     new All([
                         'constraints' => [
                             new File([
-                                'maxSize' => '2M',
+                                'maxSize' => '52M',
                                 'mimeTypes' => [
                                     'application/x-font-ttf',
-                                    'application/vnd.ms-opentype'
+                                    'application/vnd.ms-opentype',
+									'image/svg+xml',
                                 ]
                             ])
                         ]
