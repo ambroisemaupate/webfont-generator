@@ -47,6 +47,7 @@ use Twig\Environment;
 use Twig\Loader\FilesystemLoader;
 use Twig\RuntimeLoader\FactoryRuntimeLoader;
 use WebfontGenerator\Converters\ConverterInterface;
+use WebfontGenerator\Decoders\WebFontDecoder;
 use WebfontGenerator\Form\FontType;
 use WebfontGenerator\Subsetters\PythonFontSubset;
 
@@ -121,7 +122,8 @@ class App
                         $fs,
                         $this->getFontConverters(),
                         $this->getFontSubsetter(),
-                        $form->get('subset_ranges')->getData()
+                        $form->get('subset_ranges')->getData(),
+                        $this->getFontDecoder()
                     );
                     /** @var UploadedFile $file */
                     foreach ($form->get('files')->getData() as $file) {
@@ -243,6 +245,17 @@ class App
     {
         if (!empty($this->config['pyftsubset'])) {
             return new PythonFontSubset($this->config['pyftsubset']);
+        }
+        return null;
+    }
+
+    /**
+     * @return null|WebFontDecoder
+     */
+    private function getFontDecoder()
+    {
+        if (!empty($this->config['decoders'])) {
+            return new WebFontDecoder($this->config['decoders']);
         }
         return null;
     }

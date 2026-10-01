@@ -23,10 +23,10 @@
                     <div class="uk-margin" uk-margin>
                         {{ form_errors(form) }}
                         {{ form_errors(form.files) }}
-                        <p class="uk-text-meta">Upload one or many ttf/otf font files.</p>
+                        <p class="uk-text-meta">Upload one or many ttf/otf/woff/woff2 font files.</p>
                         <div uk-form-custom="target: true">
-                            {{ form_widget(form.files) }}
-                            <input class="uk-input" type="text" placeholder="Select OTF/TTF files" disabled>
+                            {{ form_widget(form.files, {attr: {accept: '.ttf,.otf,.woff,.woff2'}}) }}
+                            <input class="uk-input" type="text" placeholder="Select OTF/TTF/WOFF/WOFF2 files" disabled>
                         </div>
                         <button class="uk-button uk-button-primary"><span uk-icon="cog"></span> Convert</button>
                     </div>

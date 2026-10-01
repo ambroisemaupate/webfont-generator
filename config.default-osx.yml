@@ -22,3 +22,9 @@ converters:
         class: WebfontGenerator\Converters\EmbedOpenTypeConverter
 
 pyftsubset: /usr/local/bin/pyftsubset
+
+decoders:
+    # https://github.com/google/woff2
+    woff2: /usr/bin/woff2_decompress
+    # http://people.mozilla.com/~jkew/woff/
+    woff: /usr/bin/woff2sfnt

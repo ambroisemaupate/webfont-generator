@@ -6,9 +6,13 @@ use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\Validator\Constraints\All;
+use Symfony\Component\Validator\Constraints\Callback;
 use Symfony\Component\Validator\Constraints\File;
 use Symfony\Component\Validator\Constraints\NotBlank;
+use Symfony\Component\Validator\Context\ExecutionContextInterface;
+use WebfontGenerator\Decoders\WebFontDecoder;
 use WebfontGenerator\Subsetters\PythonFontSubset;
 
 /**
@@ -33,11 +37,8 @@ class FontType extends AbstractType
                         'constraints' => [
                             new File([
                                 'maxSize' => '2M',
-                                'mimeTypes' => [
-                                    'application/x-font-ttf',
-                                    'application/vnd.ms-opentype'
-                                ]
-                            ])
+                            ]),
+                            new Callback([$this, 'validateFontFile']),
                         ]
                     ])
                 ]
@@ -56,5 +57,31 @@ class FontType extends AbstractType
                 'expanded' => true,
             ])
         ;
+    }
+
+    /**
+     * Check file extension and signature instead of mime type,
+     * which is not reliably detected for font files.
+     *
+     * @param mixed                     $file
+     * @param ExecutionContextInterface $context
+     */
+    public function validateFontFile($file, ExecutionContextInterface $context)
+    {
+        if (!$file instanceof UploadedFile || !$file->isValid()) {
+            return;
+        }
+        $extension = strtolower($file->getClientOriginalExtension());
+        $format = WebFontDecoder::getFormat($file->getPathname());
+
+        // OTF files may contain TrueType outlines (and vice versa)
+        $sfnt = ['ttf', 'otf'];
+        $isValid = in_array($extension, $sfnt, true) ?
+            in_array($format, $sfnt, true) :
+            in_array($extension, ['woff', 'woff2'], true) && $format === $extension;
+
+        if (!$isValid) {
+            $context->buildViolation('Only TTF, OTF, WOFF or WOFF2 files are allowed.')->addViolation();
+        }
     }
 }
