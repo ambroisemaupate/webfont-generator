@@ -18,6 +18,12 @@ Built thanks to:
 docker run -ti --name "webfontgen" -p 8080:80 ambroisemaupate/webfontgenerator
 ```
 
+The Docker image is built from this repository `Dockerfile` (runtime configuration lives in `docker/`):
+
+```bash
+docker build -t ambroisemaupate/webfontgenerator .
+```
+
 Then open your browser on `http://localhost:8080`, upload your OTF/TTF/WOFF/WOFF2 font file and… enjoy!
 
 ## Development
@@ -27,7 +33,7 @@ Clone this repository, then:
 ```bash
 cp config.docker.yml config.yml
 composer install
-docker-compose up
+docker compose up --build
 ```
 
 Then open your browser on `http://localhost:8080`

@@ -3,6 +3,7 @@ services:
   app:
     environment:
       DEBUG: 1
+    build: .
     image: ambroisemaupate/webfontgenerator
     ports:
       - "8080:80"

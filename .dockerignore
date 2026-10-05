@@ -1,0 +1,12 @@
+.git
+.gitignore
+.dockerignore
+.DS_Store
+**/.DS_Store
+vendor
+build
+dist
+cache
+config.yml
+composer.lock
+screenshot@2x.png
