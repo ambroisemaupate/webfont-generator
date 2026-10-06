@@ -42,6 +42,7 @@ class WebFont
 {
     protected $output = [];
     protected $originalFiles = [];
+    protected $slugs = [];
     protected $zipFile = null;
     protected $buildDir = null;
     protected $distDir = null;
@@ -107,6 +108,12 @@ class WebFont
     {
         $original = pathinfo($tmpFile->getClientOriginalName());
         $basename = StringHandler::slugify(basename($tmpFile->getClientOriginalName(), $original['extension']));
+        // Every generated file is named after this slug: keep it unique (font.woff + font.woff2 → font, font-2).
+        $slug = $basename;
+        for ($i = 2; in_array($slug, $this->slugs, true); $i++) {
+            $slug = $basename . '-' . $i;
+        }
+        $this->slugs[] = $basename = $slug;
         $this->originalFiles[] = $tmpFile->move($this->buildDir, $basename . '.' . $original['extension']);
     }
 
