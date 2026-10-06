@@ -26,6 +26,7 @@
 namespace WebfontGenerator;
 
 use WebfontGenerator\Converters\ConverterInterface;
+use WebfontGenerator\Decoders\WebFontDecoder;
 use WebfontGenerator\Subsetters\PythonFontSubset;
 use WebfontGenerator\Util\StringHandler;
 use Symfony\Component\Filesystem\Filesystem;
@@ -41,6 +42,7 @@ class WebFont
 {
     protected $output = [];
     protected $originalFiles = [];
+    protected $slugs = [];
     protected $zipFile = null;
     protected $buildDir = null;
     protected $distDir = null;
@@ -59,6 +61,10 @@ class WebFont
      * @var array
      */
     protected $unicodeRanges;
+    /**
+     * @var null|WebFontDecoder
+     */
+    protected $decoder;
 
     /**
      * WebFont constructor.
@@ -67,9 +73,15 @@ class WebFont
      * @param array                 $converters
      * @param PythonFontSubset|null $fontSubset
      * @param array                 $unicodeRanges
+     * @param WebFontDecoder|null   $decoder
      */
-    public function __construct(Filesystem $fs, array $converters, PythonFontSubset $fontSubset = null, $unicodeRanges = [])
-    {
+    public function __construct(
+        Filesystem $fs,
+        array $converters,
+        ?PythonFontSubset $fontSubset = null,
+        $unicodeRanges = [],
+        ?WebFontDecoder $decoder = null
+    ) {
         $this->id = uniqid();
         $this->originalFiles = [];
         $this->fs = $fs;
@@ -79,6 +91,7 @@ class WebFont
         $this->converters = $converters;
         $this->fontSubset = $fontSubset;
         $this->unicodeRanges = $unicodeRanges;
+        $this->decoder = $decoder;
 
         if (!$this->fs->exists($this->buildDir)) {
             $this->fs->mkdir($this->buildDir);
@@ -95,6 +108,12 @@ class WebFont
     {
         $original = pathinfo($tmpFile->getClientOriginalName());
         $basename = StringHandler::slugify(basename($tmpFile->getClientOriginalName(), $original['extension']));
+        // Every generated file is named after this slug: keep it unique (font.woff + font.woff2 → font, font-2).
+        $slug = $basename;
+        for ($i = 2; in_array($slug, $this->slugs, true); $i++) {
+            $slug = $basename . '-' . $i;
+        }
+        $this->slugs[] = $basename = $slug;
         $this->originalFiles[] = $tmpFile->move($this->buildDir, $basename . '.' . $original['extension']);
     }
 
@@ -168,13 +187,32 @@ class WebFont
     }
 
     /**
+     * Get the TTF/OTF file to subset and convert from, decoding WOFF/WOFF2 files.
+     *
+     * @param File $originalFile
+     *
+     * @return File
+     */
+    protected function getSourceFile(File $originalFile)
+    {
+        if (!WebFontDecoder::needsDecoding($originalFile)) {
+            return $originalFile;
+        }
+        if (null === $this->decoder) {
+            throw new \RuntimeException('Cannot decode '.$originalFile->getBasename().' with null Font Decoder.');
+        }
+        return $this->decoder->decode($originalFile);
+    }
+
+    /**
      *
      */
     public function convert()
     {
         foreach ($this->getOriginalFiles() as $originalFile) {
+            $sourceFile = $this->getSourceFile($originalFile);
             foreach ($this->converters as $converter) {
-                $this->addOutputFile($converter->convert($originalFile));
+                $this->addOutputFile($converter->convert($sourceFile));
             }
         }
     }
@@ -189,7 +227,7 @@ class WebFont
         }
 
         foreach ($this->getOriginalFiles() as $originalFile) {
-            $subsetFont = $this->fontSubset->subset($originalFile, $this->unicodeRanges);
+            $subsetFont = $this->fontSubset->subset($this->getSourceFile($originalFile), $this->unicodeRanges);
             foreach ($this->converters as $converter) {
                 $this->addOutputFile($converter->convert($subsetFont));
             }

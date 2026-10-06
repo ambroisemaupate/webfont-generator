@@ -1,0 +1,16 @@
+.git
+.gitignore
+.dockerignore
+.DS_Store
+**/.DS_Store
+vendor
+build
+dist
+cache
+screenshot@2x.png
+compose.override.yml.dist
+compose.override.yml
+CLAUDE.md
+README.md
+.phpactor.json
+Dockerfile

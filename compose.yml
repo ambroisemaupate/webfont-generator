@@ -1,10 +1,8 @@
-version: "3"
 services:
   app:
     environment:
       DEBUG: 1
+    build: .
     image: ambroisemaupate/webfontgenerator
-    ports:
-      - "8080:80"
     volumes:
-      - ./:/var/www/html:cached
+      - ./:/var/www/html

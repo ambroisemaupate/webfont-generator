@@ -5,11 +5,6 @@ composer.phar
 vendor/
 old
 
-# Commit your application's lock file http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file
-# You may choose to ignore a library lock file http://getcomposer.org/doc/02-libraries.md#lock-file
-composer.lock
-
-
 ### OSX ###
 .DS_Store
 .AppleDouble
@@ -58,6 +53,5 @@ Temporary Items
 /composer.phar
 
 ### Font converter
-config.yml
 
 .nfs.*

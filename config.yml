@@ -1,23 +1,24 @@
----
 converters:
     ttf:
-        # http://fontforge.github.io/
         path: /usr/bin/fontforge
         class: WebfontGenerator\Converters\TrueTypeConverter
     svg:
         path: /usr/bin/fontforge
         class: WebfontGenerator\Converters\ScalableVectorGraphicsConverter
     woff:
-        # http://people.mozilla.com/~jkew/woff/
         path: /usr/bin/sfnt2woff
         class: WebfontGenerator\Converters\WoffConverter
     woff2:
-        # https://github.com/google/woff2
         path: /usr/bin/woff2_compress
         class: WebfontGenerator\Converters\Woff2Converter
     eot:
-        # http://code.google.com/p/ttf2eot/
-        path: /usr/bin/ttf2eot
+        path: /bin/ttf2eot
         class: WebfontGenerator\Converters\EmbedOpenTypeConverter
 
-pyftsubset: /usr/local/bin/pyftsubset
+pyftsubset: /usr/bin/pyftsubset
+
+decoders:
+    # https://github.com/google/woff2
+    woff2: /usr/bin/woff2_decompress
+    # http://people.mozilla.com/~jkew/woff/
+    woff: /usr/bin/woff2sfnt
