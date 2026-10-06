@@ -28,12 +28,11 @@ Then open your browser on `http://localhost:8080`, upload your OTF/TTF/WOFF/WOFF
 
 ## Development
 
-Clone this repository, then:
+Requires Docker only (Linux or macOS): the image ships PHP 8.5, Composer and every font tool. Clone this repository, then:
 
 ```bash
-cp config.docker.yml config.yml
-composer install
-docker compose up --build
+cp compose.override.yml.dist compose.override.yml   # exposes port 8080
+docker compose up --build                           # installs vendor/ on first launch
 ```
 
 Then open your browser on `http://localhost:8080`

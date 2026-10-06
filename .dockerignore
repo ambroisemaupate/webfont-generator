@@ -7,6 +7,10 @@ vendor
 build
 dist
 cache
-config.yml
-composer.lock
 screenshot@2x.png
+compose.override.yml.dist
+compose.override.yml
+CLAUDE.md
+README.md
+.phpactor.json
+Dockerfile

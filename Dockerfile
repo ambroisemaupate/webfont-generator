@@ -39,14 +39,14 @@ WORKDIR /var/www/html
 
 # Install dependencies first to benefit from Docker cache
 RUN rm -rf /var/www/html/*
-COPY composer.json /var/www/html/
+COPY composer.json composer.lock /var/www/html/
 RUN composer install --no-dev --no-plugins --no-scripts --no-autoloader -n
 
 COPY index.php /var/www/html/
 COPY src /var/www/html/src
 COPY views /var/www/html/views
 COPY assets /var/www/html/assets
-COPY config.docker.yml /var/www/html/config.yml
+COPY config.yml /var/www/html/
 RUN composer dump-autoload -o --no-dev \
     && chown -R www-data:www-data /var/www/html
 
