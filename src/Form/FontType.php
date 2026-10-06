@@ -26,20 +26,16 @@ class FontType extends AbstractType
      * @param FormBuilderInterface $builder
      * @param array $options
      */
-    public function buildForm(FormBuilderInterface $builder, array $options)
+    public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
             ->add('files', FileType::class, [
                 'multiple' => true,
                 'constraints' => [
                     new NotBlank(),
-                    new All([
-                        'constraints' => [
-                            new File([
-                                'maxSize' => '2M',
-                            ]),
-                            new Callback([$this, 'validateFontFile']),
-                        ]
+                    new All(constraints: [
+                        new File(maxSize: '2M'),
+                        new Callback([$this, 'validateFontFile']),
                     ])
                 ]
             ])
@@ -66,7 +62,7 @@ class FontType extends AbstractType
      * @param mixed                     $file
      * @param ExecutionContextInterface $context
      */
-    public function validateFontFile($file, ExecutionContextInterface $context)
+    public function validateFontFile($file, ExecutionContextInterface $context): void
     {
         if (!$file instanceof UploadedFile || !$file->isValid()) {
             return;

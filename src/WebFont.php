@@ -78,9 +78,9 @@ class WebFont
     public function __construct(
         Filesystem $fs,
         array $converters,
-        PythonFontSubset $fontSubset = null,
+        ?PythonFontSubset $fontSubset = null,
         $unicodeRanges = [],
-        WebFontDecoder $decoder = null
+        ?WebFontDecoder $decoder = null
     ) {
         $this->id = uniqid();
         $this->originalFiles = [];

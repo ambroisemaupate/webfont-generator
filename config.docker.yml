@@ -15,7 +15,7 @@ converters:
         path: /bin/ttf2eot
         class: WebfontGenerator\Converters\EmbedOpenTypeConverter
 
-pyftsubset: /usr/local/bin/pyftsubset
+pyftsubset: /usr/bin/pyftsubset
 
 decoders:
     # https://github.com/google/woff2
